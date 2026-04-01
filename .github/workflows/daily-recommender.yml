@@ -1,0 +1,33 @@
+name: Daily S&P 500 Recommender
+
+on:
+  schedule:
+    # 20:30 WIB = 13:30 UTC, Senin–Jumat (1 jam sebelum NYSE buka 21:30 WIB)
+    - cron: '30 13 * * 1-5'
+  workflow_dispatch:  # trigger manual dari GitHub UI
+
+jobs:
+  recommend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30   # S&P 500 = 500 saham, butuh ~10-15 menit
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run S&P 500 Recommender
+        env:
+          GMAIL_TOKEN_JSON:       ${{ secrets.GMAIL_TOKEN_JSON }}
+          GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
+          SENDER_EMAIL:           ${{ secrets.SENDER_EMAIL }}
+          RECIPIENT_EMAIL:        ${{ secrets.RECIPIENT_EMAIL }}
+        run: python main.py

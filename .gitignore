@@ -1,0 +1,8 @@
+credentials.json
+token.json
+preview.html
+__pycache__/
+*.pyc
+.env
+.vscode/
+.claude/
